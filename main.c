@@ -232,10 +232,12 @@ int main(int argc, char **argv)
 
 		if (arguments.minimize)
 			for (int i = 0; i < dfa_cnt; i++) {
-				size_t	before = dfa[i].state_cnt;
+//				size_t	before = dfa[i].state_cnt;
+				uint64_t before = dfa[i].state_cnt;
 				dfa_minimize(&dfa[i]);
 				if (arguments.verbose) {
-					printf("dfa minimized %zu->%zu\n",
+//					printf("dfa minimized %zu->%zu\n",
+					printf("dfa minimized %"PRIu64"->%"PRIu64"\n",
 					       before,
 					       dfa[i].state_cnt);
 				}
@@ -251,7 +253,8 @@ int main(int argc, char **argv)
 	if (arguments.verbose)
 		for (int j = 0; j < dfa_cnt; j++) {
 			printf("[dfa]\n"
-			       "  state cnt: %zu, bps: %d\n",
+//			       "  state cnt: %zu, bps: %d\n",
+			       "  state cnt: %"PRIu64", bps: %d\n",
 				dfa[j].state_cnt, dfa[j].bps);
 		}
 
@@ -259,7 +262,8 @@ int main(int argc, char **argv)
 		main_dfa_join(dfa, dfa_cnt, arguments.thread_cnt);
 
 		if (arguments.verbose)
-			printf("joined dfa %zu\n", dfa->state_cnt);
+//			printf("joined dfa %zu\n", dfa->state_cnt);
+			printf("joined dfa %"PRIu64"\n", dfa->state_cnt);
 
 		if (arguments.output_path != NULL) {
 			dfa_save_to_file(dfa, arguments.output_path);
@@ -409,15 +413,18 @@ void *thread_to_join(void *arg)
 		dfa_join(&task->dfa[task->t_id], dfa);
 		dfa_free(dfa);
 
-		size_t	size = task->dfa[task->t_id].state_cnt;
+//		size_t size = task->dfa[task->t_id].state_cnt;
+		uint64_t size = task->dfa[task->t_id].state_cnt;
 		if (arguments.minimize)
 			dfa_minimize(&task->dfa[task->t_id]);
 		dfa_compress(&task->dfa[task->t_id]);
-		fprintf(stderr, "[tid:%d] joined and minimized %zu->%zu\n",
+//		fprintf(stderr, "[tid:%d] joined and minimized %zu->%zu\n",
+		fprintf(stderr, "[tid:%d] joined and minimized %"PRIu64"->%"PRIu64"\n",
 				 task->t_id,
 				 size,
 				 task->dfa[task->t_id].state_cnt);
-		fprintf(stderr, "bps[%d], state_size[%zu], state_max_cnt[%zu]\n", task->dfa[task->t_id].bps, task->dfa[task->t_id].state_size, task->dfa[task->t_id].state_max_cnt);
+//		fprintf(stderr, "bps[%d], state_size[%zu], state_max_cnt[%zu]\n", task->dfa[task->t_id].bps, task->dfa[task->t_id].state_size, task->dfa[task->t_id].state_max_cnt);
+		fprintf(stderr, "bps[%d], state_size[%zu], state_max_cnt[%"PRIu64"]\n", task->dfa[task->t_id].bps, task->dfa[task->t_id].state_size, task->dfa[task->t_id].state_max_cnt);
 	}
 	fprintf(stderr, "[tid:%d] finished \n", task->t_id);
 

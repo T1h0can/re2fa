@@ -1,6 +1,7 @@
+PLATFORM = $(shell uname -s)
 CC:=gcc
 CFLAGS+= -std=c99 -Wall -Werror -pedantic -O3
-CFLAGS+= -include stddef.h -include stdint.h
+CFLAGS+= -include stddef.h -include stdint.h -include inttypes.h
 CFLAGS+= -D_USE_ZLIB
 
 SRC-refa:= \
@@ -16,12 +17,23 @@ SRC-refa:= \
 SRC-shared:= $(SRC-refa)
 SRC:= $(SRC-shared)
 
-all: librefa.so
+ifeq ($(PLATFORM), Darwin)
+	TARGET = librefa.dylib
+endif
+ifeq ($(PLATFORM), Linux)
+	TARGET = librefa.so
+endif
+
+all: $(TARGET)
 
 -include $(SRC:.c=.d)
 
 librefa.so: $(SRC-refa:.c=.o)
 	$(CC) -shared $^ -Wl,-rpath,'$$ORIGIN' -o $@ -lz
+
+librefa.dylib: $(SRC-refa:.c=.o)
+	$(CC) -dynamiclib $^ -Wl,-rpath,'$$ORIGIN' -o $@ -lz
+	cp $@ ../
 
 $(SRC-shared:.c=.o):
 	$(CC) $(CFLAGS) -fPIC -c -o $@ $<
@@ -33,4 +45,4 @@ $(SRC-shared:.c=.o):
 	rm -f $@.$$$$
 
 clean:
-	@rm -f *.o *.a *.d *.so
+	@rm -f *.o *.a *.d *.so *.dylib
