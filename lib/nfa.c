@@ -125,8 +125,6 @@ int nfa_rebuild(struct nfa *dst) {
                     }
                 }
             }
-
-
         }
 
     for (size_t i = 0; i < fa.node_cnt; i++) {

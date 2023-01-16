@@ -16,9 +16,10 @@ struct dfa {
     char *comment; /* char string with any info */
     size_t comment_size; /* size of allocated memory */
 
-//	size_t	state_cnt; /* number of dfa states */
+//	size_t state_cnt; /* number of dfa states */
+//  size_t state_malloc_cnt; /* allocated dfa states (>= state_cnt) */
     uint64_t state_cnt; /* number of dfa states */
-    size_t state_malloc_cnt; /* allocated dfa states (>= state_cnt) */
+    uint64_t state_malloc_cnt; /* allocated dfa states (>= state_cnt) */
 
     uint8_t bps; /* bits per state index */
     size_t state_size; /* bytes per state */

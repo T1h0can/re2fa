@@ -23,98 +23,97 @@
 
 const enum bs_type backslash_table_re[256] = {
 /*	[0 ... 255] = BS_UNKNOWN,*/
-	['{'] = BS_CHAR, ['}'] = BS_CHAR, ['['] = BS_CHAR, [']'] = BS_CHAR,
-	['('] = BS_CHAR, [')'] = BS_CHAR, ['^'] = BS_CHAR, ['$'] = BS_CHAR,
-	['.'] = BS_CHAR, ['|'] = BS_CHAR, ['*'] = BS_CHAR, ['+'] = BS_CHAR,
-	['?'] = BS_CHAR, ['\\']= BS_CHAR, ['\'']= BS_CHAR, ['%'] = BS_CHAR,
-	['='] = BS_CHAR,
+        ['{'] = BS_CHAR, ['}'] = BS_CHAR, ['['] = BS_CHAR, [']'] = BS_CHAR,
+        ['('] = BS_CHAR, [')'] = BS_CHAR, ['^'] = BS_CHAR, ['$'] = BS_CHAR,
+        ['.'] = BS_CHAR, ['|'] = BS_CHAR, ['*'] = BS_CHAR, ['+'] = BS_CHAR,
+        ['?'] = BS_CHAR, ['\\']= BS_CHAR, ['\'']= BS_CHAR, ['%'] = BS_CHAR,
+        ['='] = BS_CHAR,
 
-	['a'] = BS_CHAR, ['e'] = BS_CHAR, ['f'] = BS_CHAR, ['n'] = BS_CHAR,
-	['r'] = BS_CHAR, ['t'] = BS_CHAR,
+        ['a'] = BS_CHAR, ['e'] = BS_CHAR, ['f'] = BS_CHAR, ['n'] = BS_CHAR,
+        ['r'] = BS_CHAR, ['t'] = BS_CHAR,
 
 /* things above are from practice */
-	['/'] = BS_CHAR, ['#'] = BS_CHAR,
+        ['/'] = BS_CHAR, ['#'] = BS_CHAR,
 /* */
 
-	['x']  = BS_HEX,
-	['0']  = BS_OCTET,   ['1'] = BS_OCTET,
-	['d']  = BS_CHARSET, ['s'] = BS_CHARSET, ['S'] = BS_CHARSET,
-	['w']  = BS_CHARSET, ['W'] = BS_CHARSET,
+        ['x']  = BS_HEX,
+        ['0']  = BS_OCTET, ['1'] = BS_OCTET,
+        ['d']  = BS_CHARSET, ['s'] = BS_CHARSET, ['S'] = BS_CHARSET,
+        ['w']  = BS_CHARSET, ['W'] = BS_CHARSET,
 
 };
 
 const unsigned char backslash_replace_table_re[256] = {
 /*	[0 ... 255] = '\0',*/
 
-	['{'] = '{',
-	['}'] = '}',
-	['['] = '[',
-	[']'] = ']',
-	['('] = '(',
-	[')'] = ')',
-	['^'] = '^',
-	['$'] = '$',
-	['.'] = '.',
-	['|'] = '|',
-	['*'] = '*',
-	['+'] = '+',
-	['?'] = '?',
-	['\\']= '\\',
-	['\'']= '\'',
-	['%'] = '%',
-	['='] = '=',
+        ['{'] = '{',
+        ['}'] = '}',
+        ['['] = '[',
+        [']'] = ']',
+        ['('] = '(',
+        [')'] = ')',
+        ['^'] = '^',
+        ['$'] = '$',
+        ['.'] = '.',
+        ['|'] = '|',
+        ['*'] = '*',
+        ['+'] = '+',
+        ['?'] = '?',
+        ['\\']= '\\',
+        ['\'']= '\'',
+        ['%'] = '%',
+        ['='] = '=',
 
-	['a'] = 0x07, ['e'] = 0x1B,
-	['f'] = 0x0C, ['n'] = 0x0A, ['r'] = 0x0D,
-	['t'] = 0x09,
+        ['a'] = 0x07, ['e'] = 0x1B,
+        ['f'] = 0x0C, ['n'] = 0x0A, ['r'] = 0x0D,
+        ['t'] = 0x09,
 
-	['/'] = '/',  ['#'] = '#'
+        ['/'] = '/', ['#'] = '#'
 
 
 };
 
-void set_charset_bits_re(unsigned char *data, unsigned char cs)
-{
-	switch (cs) {
-	case 'd':	/* digits */
-		data[6] |= 0xFF;
-		data[7] |= 0x03;
-		break;
-	case 's':	/* whitespace [\t\n\f\r ] */
-		data[1] |= 0x36;
-		data[4] |= 0x01;
-		break;
-	case 'S':
-		memset(data, 0xFF, 256/8);
-		data[1] ^= 0x36;
-		data[4] ^= 0x01;
-		break;
-	case 'w':
-		data[6]  |= 0xFF;
-		data[7]  |= 0x03;
-		data[8]  |= 0xFE;
-		data[9]  |= 0xFF;
-		data[10] |= 0xFF;
-		data[11] |= 0x87;
-		data[12] |= 0xFE;
-		data[13] |= 0xFF;
-		data[14] |= 0xFF;
-		data[15] |= 0x07;
-		break;
-	case 'W':
-		memset(data, 0xFF, 256/8);
-		data[6]  ^= 0xFF;
-		data[7]  ^= 0x03;
-		data[8]  ^= 0xFE;
-		data[9]  ^= 0xFF;
-		data[10] ^= 0xFF;
-		data[11] ^= 0x87;
-		data[12] ^= 0xFE;
-		data[13] ^= 0xFF;
-		data[14] ^= 0xFF;
-		data[15] ^= 0x07;
-		break;
-	};
+void set_charset_bits_re(unsigned char *data, unsigned char cs) {
+    switch (cs) {
+        case 'd':    /* digits */
+            data[6] |= 0xFF;
+            data[7] |= 0x03;
+            break;
+        case 's':    /* whitespace [\t\n\f\r ] */
+            data[1] |= 0x36;
+            data[4] |= 0x01;
+            break;
+        case 'S':
+            memset(data, 0xFF, 256 / 8);
+            data[1] ^= 0x36;
+            data[4] ^= 0x01;
+            break;
+        case 'w':
+            data[6] |= 0xFF;
+            data[7] |= 0x03;
+            data[8] |= 0xFE;
+            data[9] |= 0xFF;
+            data[10] |= 0xFF;
+            data[11] |= 0x87;
+            data[12] |= 0xFE;
+            data[13] |= 0xFF;
+            data[14] |= 0xFF;
+            data[15] |= 0x07;
+            break;
+        case 'W':
+            memset(data, 0xFF, 256 / 8);
+            data[6] ^= 0xFF;
+            data[7] ^= 0x03;
+            data[8] ^= 0xFE;
+            data[9] ^= 0xFF;
+            data[10] ^= 0xFF;
+            data[11] ^= 0x87;
+            data[12] ^= 0xFE;
+            data[13] ^= 0xFF;
+            data[14] ^= 0xFF;
+            data[15] ^= 0x07;
+            break;
+    };
 }
 
 /*
@@ -129,50 +128,49 @@ enum bs_type {
 
 const enum bs_type backslash_table_cc[256] = {
 /*	[0 ... 255] = 0x00,*/
-	[']'] = BS_CHAR,
-	['a'] = BS_CHAR, ['b'] = BS_CHAR, ['e'] = BS_CHAR,
-	['f'] = BS_CHAR, ['n'] = BS_CHAR, ['r'] = BS_CHAR,
-	['t'] = BS_CHAR,
+        [']'] = BS_CHAR,
+        ['a'] = BS_CHAR, ['b'] = BS_CHAR, ['e'] = BS_CHAR,
+        ['f'] = BS_CHAR, ['n'] = BS_CHAR, ['r'] = BS_CHAR,
+        ['t'] = BS_CHAR,
 /* things above are from practice */
-	['/'] = BS_CHAR, ['&'] = BS_CHAR, ['.'] = BS_CHAR,
-	['\\']= BS_CHAR, ['-'] = BS_CHAR,
+        ['/'] = BS_CHAR, ['&'] = BS_CHAR, ['.'] = BS_CHAR,
+        ['\\']= BS_CHAR, ['-'] = BS_CHAR,
 /**/
-	['d'] = BS_CHARSET, ['s'] = BS_CHARSET, ['w'] = BS_CHARSET,
-	['0'] = BS_OCTET, ['1'] = BS_OCTET,
-	['x'] = BS_HEX
+        ['d'] = BS_CHARSET, ['s'] = BS_CHARSET, ['w'] = BS_CHARSET,
+        ['0'] = BS_OCTET, ['1'] = BS_OCTET,
+        ['x'] = BS_HEX
 };
 
 const unsigned char backslash_replace_table_cc[256] = {
 /*	[0 ... 255] = '\0',*/
-	[']'] = ']',
-	['a'] = 0x07, ['b'] = 0x08, ['e'] = 0x1B,
-	['f'] = 0x0C, ['n'] = 0x0A, ['r'] = 0x0D,
-	['t'] = 0x09,
-	['/'] = '/',  ['&'] = '&' , ['.'] = '.',
-	['\\']= '\\', ['-'] = '-'
+        [']'] = ']',
+        ['a'] = 0x07, ['b'] = 0x08, ['e'] = 0x1B,
+        ['f'] = 0x0C, ['n'] = 0x0A, ['r'] = 0x0D,
+        ['t'] = 0x09,
+        ['/'] = '/', ['&'] = '&', ['.'] = '.',
+        ['\\']= '\\', ['-'] = '-'
 };
 
-void set_charset_bits_cc(unsigned char *data, unsigned char cs)
-{
-	switch (cs) {
-	case 'd':	/* digits */
-		data[6] |= 0xFF;
-		data[7] |= 0x03;
-		break;
-	case 's':	/* whitespace [\t\n\f\r ] */
-		data[1] |= 0x36;
-		data[4] |= 0x01;
-		break;
-	case 'w':
-		set_charset_bits_cc(data, 'd');
-		data[8]  |= 0xFE;
-		data[9]  |= 0xFF;
-		data[10] |= 0xFF;
-		data[11] |= 0x87;
-		data[12] |= 0xFE;
-		data[13] |= 0xFF;
-		data[14] |= 0xFF;
-		data[15] |= 0x07;
-		break;
-	};
+void set_charset_bits_cc(unsigned char *data, unsigned char cs) {
+    switch (cs) {
+        case 'd':    /* digits */
+            data[6] |= 0xFF;
+            data[7] |= 0x03;
+            break;
+        case 's':    /* whitespace [\t\n\f\r ] */
+            data[1] |= 0x36;
+            data[4] |= 0x01;
+            break;
+        case 'w':
+            set_charset_bits_cc(data, 'd');
+            data[8] |= 0xFE;
+            data[9] |= 0xFF;
+            data[10] |= 0xFF;
+            data[11] |= 0x87;
+            data[12] |= 0xFE;
+            data[13] |= 0xFF;
+            data[14] |= 0xFF;
+            data[15] |= 0x07;
+            break;
+    };
 }

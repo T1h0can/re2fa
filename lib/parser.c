@@ -871,9 +871,7 @@ void first_pass_result_print(struct first_pass_result *result,
                              const char *ptr) {
     printf("fp_result:\n");
 //	printf("max_size = [%zu]; size=[%zu];""flags=[%016lX]\n",
-    printf("max_size = [%zu]; size=[%zu];""flags=[%"
-    PRIx64
-    "]\n",
+    printf("max_size = [%zu]; size=[%zu];""flags=[%"PRIx64"]\n",
             result->max_size, result->size, result->flags);
 
     for (size_t i = 0; i < result->size; i++) {

@@ -1088,11 +1088,7 @@ void dfa_print_char(unsigned char a) {
 
 void dfa_print(struct dfa *src) {
 //	printf("#dfa states: %zu, first: %zu \n", src->state_cnt, src->first_index);
-    printf("#dfa states: %"
-    PRIu64
-    ", first: %"
-    PRIu64
-    " \n", src->state_cnt, src->first_index);
+    printf("#dfa states: %"PRIu64", first: %"PRIu64" \n", src->state_cnt, src->first_index);
 //	struct dfa_node	*node;
 
     for (size_t i = 0; i < src->state_cnt; i++) {
@@ -1175,16 +1171,13 @@ void dfa_print(struct dfa *src) {
                         }
                     }
 
-
                     if (!started) {
                         started = 1;
                     } else {
                     }
 
-
                     db = ub + 1;
                 }
-
 
             j = u_bnd - 1;
             if (total_trans > 1)
