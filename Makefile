@@ -1,4 +1,4 @@
-PLATFORM = $(shell uname -s)
+PLATFORM= $(shell uname -s)
 CC:= gcc
 CFLAGS+= -std=c99 -Wall -Werror -pedantic -O3
 CFLAGS+= -include stddef.h -include stdint.h -include inttypes.h
@@ -9,9 +9,8 @@ endif
 
 SUBDIR:= lib
 
-#CFLAGS+= $(SUBDIR:%=-L%)
-LIBS:= $(SUBDIR:%=-L%)
-LIBS+= -lrefa
+CFLAGS+= $(SUBDIR:%=-L%)
+LIBS:= -lrefa
 LIBS+= -pthread
 ifeq ($(PLATFORM), Darwin)
 	LIBS+= -largp
@@ -24,8 +23,7 @@ BIN:= re2fa
 all: $(SUBDIR) $(BIN)
 
 re2fa: main.c $(VER)
-	#$(CC) $(CFLAGS) $< -o $@ $(LIBS)
-	$(CC) $(CFLAGS) $(LIBS) $< -o $@
+	$(CC) $(CFLAGS) $< -o $@ $(LIBS)
 
 $(VER): .FORCE
 	echo 'const char *git_version = "dev";' >> version_info.h
