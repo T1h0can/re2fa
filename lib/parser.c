@@ -196,16 +196,18 @@ int parse_minmax(int *min, int *max, const unsigned char **pattern) {
 
     if (*ptr == '}') {
         *max = atoi((const char *) *pattern);
-//		goto out;
+        if (*min > *max)
+		error = PE_WRONG_SYNTAX;
+	goto out;
     } else {
         error = PE_WRONG_SYNTAX;
         goto out;
     }
 
-    if (*min > *max) {
-        error = PE_WRONG_SYNTAX;
-        goto out;
-    }
+//    if (*min > *max) {
+//        error = PE_WRONG_SYNTAX;
+//        goto out;
+//    }
 
     out:
     *pattern = ptr;
