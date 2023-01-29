@@ -134,7 +134,7 @@ const enum bs_type backslash_table_cc[256] = {
         ['t'] = BS_CHAR,
 /* things above are from practice */
         ['/'] = BS_CHAR, ['&'] = BS_CHAR, ['.'] = BS_CHAR,
-        ['\\']= BS_CHAR, ['-'] = BS_CHAR,
+        ['\\']= BS_CHAR, ['-'] = BS_CHAR, ['?'] = BS_CHAR,
 /**/
         ['d'] = BS_CHARSET, ['s'] = BS_CHARSET, ['w'] = BS_CHARSET,
         ['0'] = BS_OCTET, ['1'] = BS_OCTET,
@@ -148,7 +148,7 @@ const unsigned char backslash_replace_table_cc[256] = {
         ['f'] = 0x0C, ['n'] = 0x0A, ['r'] = 0x0D,
         ['t'] = 0x09,
         ['/'] = '/', ['&'] = '&', ['.'] = '.',
-        ['\\']= '\\', ['-'] = '-'
+        ['\\']= '\\', ['-'] = '-', ['?'] = '?'
 };
 
 void set_charset_bits_cc(unsigned char *data, unsigned char cs) {
