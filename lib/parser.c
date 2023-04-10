@@ -201,13 +201,10 @@ int parse_minmax(int *min, int *max, const unsigned char **pattern)
 
 	if (*ptr == '}') {
 		*max = atoi((const char *)*pattern);
-//		goto out;
-	} else {
-		error = PE_WRONG_SYNTAX;
+		if (*min > *max)
+			error = PE_WRONG_SYNTAX;
 		goto out;
-	}
-
-	if (*min > *max) {
+	} else {
 		error = PE_WRONG_SYNTAX;
 		goto out;
 	}
@@ -391,6 +388,10 @@ int regexp_first_pass(struct first_pass_result *dst,
 			case BS_CHARSET:
 				fpu_tmp.type = FP_CHARSET;
 				fpu_tmp.data.cs_val = *ptr;
+				break;
+			case BS_BOUNDARY:
+				fpu_tmp.type = FP_METACHAR;
+				fpu_tmp.data.mc_val = *ptr;
 				break;
 			default:
 				error = PE_WRONG_SYNTAX;
@@ -641,6 +642,7 @@ int regexp_second_pass(struct second_pass_result *dst,
 					begin_symb = ptr - src->parsed;
 				}
 				break;
+//			case 'b':
 			case '$':
 				if (end_symb != 0 || (ptr - src->parsed) != src->size - 2) {
 					error = PE_NOT_IMPLEMENTED;
@@ -654,6 +656,8 @@ int regexp_second_pass(struct second_pass_result *dst,
 				regexp_node_add_child(cur_node, &tmp_node);
 				regexp_node_alloc(tmp_node, RE_CONCAT);
 				cur_node = tmp_node;
+				break;
+			default:	//for '\b' not in charclass, may be right, just ignore it
 				break;
 			}
 			break;
@@ -879,7 +883,7 @@ void first_pass_result_print(struct first_pass_result *result,
 			     const char *ptr)
 {
 	printf("fp_result:\n");
-	printf("max_size = [%zu]; size=[%zu];""flags=[%016lX]\n",
+	printf("max_size = [%zu]; size=[%zu];""flags=[%"PRIx64"]\n",
 		result->max_size, result->size, result->flags);
 
 	for (size_t i = 0; i < result->size; i++) {

@@ -13,7 +13,8 @@ enum bs_type {
 	BS_CHAR    = 0x01,	/* equal to some character */
 	BS_CHARSET = 0x02,	/* equal to charset */
 	BS_OCTET   = 0x04,	/* begin of octet */
-	BS_HEX     = 0x08	/* begin of hex */
+	BS_HEX     = 0x08,	/* begin of hex */
+	BS_BOUNDARY = 0x10	/* meta char for boundary '\b', which isn't in char class */
 };
 
 /* table to connect \<smth> and meaning in regular expression (NOT in []) */
