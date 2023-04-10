@@ -18,9 +18,9 @@ struct dfa {
 	size_t	state_cnt; /* number of dfa states */
 	size_t	state_malloc_cnt; /* allocated dfa states (>= state_cnt) */
 
-	uint8_t		bps; /* bits per state index */
-	size_t		state_size; /* bytes per state */
-	uint64_t	state_max_cnt; /* maximum size of dfa (0xFF..FF by default) */
+	uint8_t	bps; /* bits per state index */
+	size_t	state_size; /* bytes per state */
+	size_t	state_max_cnt; /* maximum size of dfa (0xFF..FF by default) */
 
 	void	*trans; /* array of transitions (q -a-> trans[q][a]) */
 	uint8_t	*flags; /* array of states' flags such as LAST and DEADEND */

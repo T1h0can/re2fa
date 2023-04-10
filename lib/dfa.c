@@ -169,7 +169,6 @@ int dfa_copy(struct dfa *dst, struct dfa *src)
 
 int dfa_join(struct dfa *dst_g, struct dfa *src_g)
 {
-/* TODO! */
 	struct dfa	*dst = dst_g, *src = src_g;
 	if (dst_g->state_cnt < src_g->state_cnt) {
 		dst = src_g;
@@ -226,9 +225,7 @@ if (!dfa_state_is_last(&dfa_out, cur_index))
 			size_t	next_index;
 
 			next[0] = dfa_get_trans(dst, cur[0], i);
-//dst->nodes[cur[0]].trans[i];
 			next[1] = dfa_get_trans(src, cur[1], i);
-//src->nodes[cur[1]].trans[i];
 
 			for (int j = 0; j < tmp_cnt; j++) {
 				if (tmp_pairs[j * 3] == next[0] &&
@@ -320,8 +317,8 @@ int dfa_append(struct dfa *first, struct dfa *second)
 	if (!m_found)
 		return -1;
 
-	uint64_t	offset;
-	uint64_t	sf_index = second->first_index;
+	size_t	offset;
+	size_t	sf_index = second->first_index;
 	dfa_add_n_state(first, second->state_cnt - 1, &offset);
 
 	uint64_t	m_trans[256];
@@ -1107,9 +1104,10 @@ void dfa_print(struct dfa *src)
 
 	for (size_t i = 0; i < src->state_cnt; i++) {
 //		node = &(src->nodes[i]);
-		printf("{node [shape = %s, %s]; \"%zu\";}\n",
+		printf("{node [shape = %s, %s]%s; \"%zu\";}\n",
 		       (dfa_state_is_last(src, i) ? "doublecircle" : "circle"),
 		       (i == src->first_index ? "style=bold" : ""),
+			   (dfa_state_is_deadend(src, i) ? " dead" : ""),
 			i);
 	}
 
