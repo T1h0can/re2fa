@@ -149,7 +149,7 @@ int convert_dfa_to_d2fa(struct d2fa *dst, struct dfa *src) {
 			}
 
 			if (is_need) {
-				printf("%zu-0x%02X->%zu\n", i, j, tran_ij);
+//				printf("%zu-0x%02X->%zu\n", i, j, tran_ij);
 				d2fa_add_trans(dst, i, j, tran_ij);
 			}
 		}
