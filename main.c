@@ -14,8 +14,10 @@
 
 #include "lib/dfa.h"
 #include "lib/nfa.h"
+#include "lib/d2fa.h"
 #include "lib/tree_to_nfa.h"
 #include "lib/nfa_to_dfa.h"
+#include "lib/dfa_to_d2fa.h"
 
 #include "version_info.h"
 
@@ -38,6 +40,7 @@ static struct argp_option options[] = {
 	{"threads",	't',		"TNUM", 0, "Number of threads", 1},
 	{"verbose",	'v',		0,	0, "Verbose output", 2},
 	{"join",	'j',		0,	0, "Join inputs into one output", 1},
+	{"d2fa", 'd',			0,	0,	"dfa to d2fa", 1},
 	{"minimize",	'm',		0,	0, "Minimize automaton", 1},
 	{0}
 };
@@ -53,6 +56,7 @@ struct arguments {
 	int	verbose;
 	int	join;
 	int	minimize;
+	int d2fa;
 
 	int	thread_cnt;
 };
@@ -111,6 +115,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 	case 'v':
 		args->verbose = 1;
 		break;
+	case 'd':
+		args->d2fa = 1;
+		break;
 	case ARGP_KEY_ARG:
 		args->input = realloc(args->input,
 				      sizeof(char *) * (args->input_cnt + 1));
@@ -133,6 +140,8 @@ int main_regexp_to_nfa(struct nfa **, char **, int *);
 int main_nfa_to_dfa(struct dfa **, struct nfa *, int *cnt);
 /* join dfa into one */
 int main_dfa_join(struct dfa *dfa, int cnt, int t_cnt);
+/*convert dfa to d2fa*/
+int main_dfa_to_d2fa(struct d2fa **d2fa, struct dfa *dfa, int cnt);
 
 int main(int argc, char **argv)
 {
@@ -145,6 +154,7 @@ int main(int argc, char **argv)
 	arguments.output_type	= FAT_DFA_FILE;
 	arguments.verbose	= 0;
 	arguments.join		= 0;
+	arguments.d2fa		= 0;
 	arguments.minimize	= 0;
 	arguments.thread_cnt	= 1;
 
@@ -230,7 +240,7 @@ int main(int argc, char **argv)
 		if (dfa_cnt == 0)
 			return -1;
 
-		if (arguments.minimize)
+		if (arguments.minimize && !arguments.join)
 			for (int i = 0; i < dfa_cnt; i++) {
 				size_t	before = dfa[i].state_cnt;
 				dfa_minimize(&dfa[i]);
@@ -254,6 +264,36 @@ int main(int argc, char **argv)
 			       "  state cnt: %zu, bps: %d\n",
 				dfa[j].state_cnt, dfa[j].bps);
 		}
+
+	if (arguments.d2fa) {
+		int d2fa_cnt = arguments.join ? 1 : dfa_cnt;
+		struct d2fa *d2fa = malloc(sizeof(struct d2fa) * d2fa_cnt);
+		for (int i = 0; i < d2fa_cnt; ++i)
+			d2fa_alloc(&d2fa[i]);
+		main_dfa_to_d2fa(&d2fa, dfa, dfa_cnt);
+
+//		for(int i = 0; i < d2fa_cnt; ++i)
+//			d2fa_print(d2fa + i);
+
+		if (arguments.verbose) {
+			for (int i = 0; i < d2fa_cnt; ++i) {
+				printf("[d2fa]\n"
+					   "  state cnt: %zu, trans cnt: %zu reduce: %.2f\n",
+					   d2fa[i].state_cnt,
+					   d2fa[i].trans_cnt + d2fa[i].state_cnt - 1,
+					   1 - (d2fa[i].trans_cnt + d2fa[i].default_trans_cnt) / 256.0 / d2fa[i].state_cnt);
+			}
+		}
+
+		for (int i = 0; i < d2fa_cnt; ++i) {
+			dfa_free(&dfa[i]);
+			d2fa_free(&d2fa[i]);
+		}
+		free(dfa);
+		free(d2fa);
+
+		goto out;
+	}
 
 	if (dfa_cnt > 1 && arguments.join) {
 		main_dfa_join(dfa, dfa_cnt, arguments.thread_cnt);
@@ -422,4 +462,22 @@ void *thread_to_join(void *arg)
 	fprintf(stderr, "[tid:%d] finished \n", task->t_id);
 
 	return NULL;
+}
+
+int main_dfa_to_d2fa(struct d2fa **d2fa, struct dfa *dfa, int cnt) {
+	if (cnt > 1 && arguments.join) {
+		main_dfa_join(dfa, cnt, arguments.thread_cnt);
+		cnt = 1;
+	}
+
+	if (cnt > 1 && arguments.minimize)
+		for (int i = 0; i < cnt; ++i) {
+			dfa_minimize(dfa + i);
+			dfa_compress(dfa + i);
+		}
+
+	for (int i = 0; i < cnt; ++i)
+		convert_dfa_to_d2fa(*d2fa + i, dfa + i);
+
+	return 0;
 }
