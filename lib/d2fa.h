@@ -27,7 +27,6 @@ struct d2fa {
 	uint8_t	*flags; /* array of states' flags such as LAST, DEADEND and ROOT*/
 
 	size_t	first_index;	/* initial state's index */
-	size_t	dead_index;		/*dead state's index */
 };
 
 

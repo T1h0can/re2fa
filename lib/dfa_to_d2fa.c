@@ -114,7 +114,8 @@ int convert_dfa_to_d2fa(struct d2fa *dst, struct dfa *src) {
 		free(weights[i]);
 	free(weights);
 
-	parents[dead_index] = src->first_index;	//死状态的父节点为first_index
+	if (dead_index != state_cnt)
+		parents[dead_index] = src->first_index;	//死状态的父节点为first_index
 
 //	print_MST(parents, state_cnt);
 
@@ -162,7 +163,6 @@ int convert_dfa_to_d2fa(struct d2fa *dst, struct dfa *src) {
 	dst->comment = realloc(dst->comment, dst->comment_size);
 	memcpy(dst->comment, src->comment, dst->comment_size);
 	dst->first_index = src->first_index;
-	dst->dead_index = dead_index;
 	dst->flags = malloc(sizeof(int8_t) * state_cnt);
 	memcpy(dst->flags, src->flags, sizeof(int8_t) * state_cnt);
 	for (size_t i = 0; i < state_cnt; ++i)

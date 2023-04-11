@@ -45,7 +45,6 @@ int d2fa_alloc(struct d2fa *dst) {
 	dst->flags = NULL;
 
 	dst->first_index = 0;
-	dst->dead_index = ~0;
 	return 0;
 }
 
@@ -169,10 +168,10 @@ void d2fa_print(struct d2fa *src)
 	for (size_t i = 0; i < src->state_cnt; i++) {
 		printf("{node [shape = %s, %s%s%s%s]; \"%zu\";}\n",
 			   (d2fa_state_is_last(src, i) ? "doublecircle" : "circle"),
-			   ((i == src->first_index || i == src->default_trans[i] || i == src->dead_index) ? "style=" : ""),
+			   ((i == src->first_index || i == src->default_trans[i] || d2fa_state_is_deadend(src, i)) ? "style=" : ""),
 			   (i == src->first_index ? "bold, " : ""),
 			   (i == src->default_trans[i] ? "root ": ""),
-			   (i == src->dead_index ? "dead " : ""),
+			   (d2fa_state_is_deadend(src, i) ? "dead " : ""),
 			   i);
 	}
 
@@ -276,7 +275,6 @@ void d2fa_trans_print(struct d2fa *src) {
 	}
 }
 
-
 void d2fa_default_tran_print(struct d2fa *src) {
 	printf("[D2FA] default trans root:");
 	for (size_t i = 0; i < src->state_cnt; ++i)
@@ -288,5 +286,4 @@ void d2fa_default_tran_print(struct d2fa *src) {
 			printf("#node[%zu] -> \"%zu\"\n", i, src->default_trans[i]);
 		}
 	}
-
 }
