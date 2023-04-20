@@ -88,6 +88,12 @@ int convert_dfa_to_d2fa(struct d2fa *dst, struct dfa *src) {
 			size_t m = weights[i][j * 2];
 			size_t n = weights[i][j * 2 + 1];
 
+			if (m == dead_index) {
+				size_t tmp = m;
+				m = n;
+				n = tmp;
+			}
+
 			if (is_checked[m] && !is_checked[n]) {
 				parents[n] = m;
 				is_checked[n] = 1;
@@ -101,8 +107,13 @@ int convert_dfa_to_d2fa(struct d2fa *dst, struct dfa *src) {
 				size_t root_m = find_root(parents, m);
 				size_t root_n = find_root(parents, n);
 				if (root_m != root_n){
-					parents_revers(parents, n);
-					parents[n] = m;
+					if (root_m == dead_index) {
+						parents_revers(parents, m);
+						parents[m] = n;
+					} else  {
+						parents_revers(parents, n);
+						parents[n] = m;
+					}
 				}
 				else
 					continue;
@@ -114,7 +125,7 @@ int convert_dfa_to_d2fa(struct d2fa *dst, struct dfa *src) {
 		free(weights[i]);
 	free(weights);
 
-	if (dead_index != state_cnt)
+	if (dead_index != state_cnt && dead_index == parents[dead_index])
 		parents[dead_index] = src->first_index;	//死状态的父节点为first_index
 
 //	print_MST(parents, state_cnt);
